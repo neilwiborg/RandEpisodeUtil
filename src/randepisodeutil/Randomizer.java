@@ -11,6 +11,8 @@ import java.util.Scanner;
 public class Randomizer
 {
     String title;
+    int numberOfSeasons;
+    int[] seasons;
 
     public Randomizer()
     {
@@ -24,13 +26,15 @@ public class Randomizer
     public String ChooseRandom()
     {
         Random rand = new Random();
-        int lineCount = countLines();
-        int val = rand.nextInt(lineCount - 2) + 2;
-        //val between [2,lineCount]
-        return findEpisode(val);
+        File show = loadFile();
+        loadShow(show);
+        int episodeCount = arraySum(seasons);
+        int val = rand.nextInt(episodeCount) + 1;
+        //val between [1,lineCount]
+        return findEpisode(show, val, seasons);
     }
     
-    private int countLines()
+    private File loadFile()
     {
         try
         {
@@ -44,49 +48,87 @@ public class Randomizer
             {
                 prgrmDir.mkdir();
             }
-            if (show.isFile())
+            return show;
+        } catch (Exception exp)
+        {
+            System.out.println("countLines Exception");
+        }
+        return null;
+    }
+    
+    private void loadShow(File showFile)
+    {
+        try
+        {
+            if (showFile.isFile())
             {
-                Scanner fileReader = new Scanner(show);
-                int lines = 0;
-                while (fileReader.hasNextLine())
+                Scanner fileReader = new Scanner(showFile);
+                fileReader.next();
+                numberOfSeasons = Integer.parseInt(fileReader.next());
+                seasons = new int[numberOfSeasons + 1];
+                for (int i = 0; i < numberOfSeasons; i++)
                 {
-                    fileReader.nextLine();
-                    lines++;
+                    seasons[i + 1] = Integer.parseInt(fileReader.next());
                 }
-                return lines;
             }
         } catch (Exception exp)
         {
             System.out.println("countLines Exception");
         }
-        return 0;
     }
     
-    private String findEpisode(int lineNumber)
+    private int arraySum (int[] myArray)
     {
+        int sum = 0;
+        for (int i = 0; i < myArray.length; i++)
+        {
+            sum += myArray[i];
+        }
+        return sum;
+    }
+    
+    private int[] findEpisodeNumber(int randomNumber, int[] show)
+    {
+        int episodeNumber = randomNumber;
+        int seasonNumber = 1;
+        for (int i = 1; episodeNumber > show[i]; i++)
+        {
+            seasonNumber++;
+            episodeNumber -= show[i];
+        }
+        return new int[] {seasonNumber, episodeNumber};
+    }
+    
+    private String findEpisode(File showFile, int random, int[] myShow)
+    {
+        int[] myEp = findEpisodeNumber(random, myShow);
+        String seasonLine = "";
+        String epTitle = "";
         try
         {
-            //String filepath = ".\\" + title + ".txt";
-            String filepath = System.getenv("LOCALAPPDATA") + 
-                    "/RandEpisodeUtil/" + title + ".txt";
-            File show = new File(filepath);
-            if (show.isFile())
+            if (showFile.isFile())
             {
-                Scanner fileReader = new Scanner(show);
-                int lines = 1;
-                while (lines < lineNumber)
+                Scanner fileReader = new Scanner(showFile);
+                fileReader.nextLine();
+                int lines = 0;
+                do
                 {
-                    fileReader.nextLine();
+                    seasonLine = fileReader.nextLine();
                     lines++;
+                } while (lines < myEp[0]);
+                fileReader = new Scanner(seasonLine);
+                fileReader.useDelimiter(",");
+                for (int i = 0; i < myEp[1]; i++)
+                {
+                    epTitle = fileReader.next();
                 }
-                String text = fileReader.nextLine();
-                return text;
+                epTitle = "S" + myEp[0] + "E" + epTitle;
             }
         } catch (Exception exp)
         {
             System.out.println("findEpisode Exception");
             exp.printStackTrace();
         }
-        return "";
+        return epTitle;
     }
 }
