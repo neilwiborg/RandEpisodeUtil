@@ -3,13 +3,21 @@ package randepisodeutil;
 import java.util.Scanner;
 
 /**
- *
+ * Controller that manages the RandEpisodeUtil program. Instantiates other
+ * classes based on what user wants to do. Program can add new show files when
+ * no arguments are added. The -c option can be used to choose a new random
+ * episode. The -r option can be used to remove a show file. Both -c and -r
+ * require the show name to be specified as an argument.
+ * 
  * @author Neil Wiborg
  */
 public class RandEpisodeUtil
 {
 
     /**
+     * The first method run by the program, controls which function of the
+     * program will be executed.
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args)

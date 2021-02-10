@@ -5,7 +5,9 @@ import java.io.FileWriter;
 import java.util.Scanner;
 
 /**
- *
+ * Takes show data (title and seasons) and saves it into a file with name
+ * "showName.txt" located in "C:/Users/%USER%/AppData/Local/RandEpisodeUtil/".
+ * 
  * @author Neil Wiborg
  */
 public class FillEpisodes
@@ -13,16 +15,31 @@ public class FillEpisodes
     String title;
     int[] eps;
     
+    /**
+     * Constructs an empty FillEpisodes with no show information.
+     */
     public FillEpisodes()
     {
     }
-
+    
+    /**
+     * Constructs a FillEpisodes with the show information given as the 
+     * arguments.
+     * 
+     * @param title the title of the show to be added
+     * @param eps   the array with each index being a season, and the contents
+     *              of the index being the number of episodes
+     */
     public FillEpisodes(String title, int[] eps)
     {
         this.title = title;
         this.eps = eps;
     }
     
+    /**
+     * Writes all relevant show data to a file. If the program directory does
+     * not exist, creates the directory.
+     */
     public void writeFile()
     {
         try
@@ -57,14 +74,19 @@ public class FillEpisodes
         }
     }
     
-    /*
-    [V1.3] [# of seasons] [# of eps in sea 1] [# of eps in sea 2] ...
-    1,2,3,4,5,6,7,8,9,10A,10B,13,...[all eps in season 1]
-    1,2,3,4,5,6,7,8A,12,...[all eps in season 2]
-    .
-    .
-    .
-    */
+    /**
+     * Creates the show data in the format that needs to be saved by using a
+     * StringBuffer and then converts it into a String to be written. The format
+     * is:
+     * [V1.3] [# of seasons] [# of eps in sea 1] [# of eps in sea 2] ...
+     * 1,2,3,4,5,6,7,8,9,10A,10B,13,...[all eps in season 1]
+     * 1,2,3,4,5,6,7,8A,12,...[all eps in season 2]
+     * .
+     * .
+     * .
+     * 
+     * @return the built String to be written to a file.
+     */
     private String buildText()
     {
         StringBuffer list = new StringBuffer();
@@ -84,15 +106,6 @@ public class FillEpisodes
                 list.append("," + j);
             }
         }
-//        list.append("[V1.2]");
-//        for (int i = 0; i < eps.length; i++)
-//        {
-//            for (int j = 0; j < eps[i]; j++)
-//            {
-//                list.append("\nS" + (i + 1) + "E" + (j + 1));
-//                first = false;
-//            }
-//        }
         return list.toString();
     }
 }
