@@ -23,7 +23,7 @@ public class FillEpisodes
         this.eps = eps;
     }
     
-    public void WriteFile()
+    public void writeFile()
     {
         try
         {
@@ -46,7 +46,7 @@ public class FillEpisodes
                     throw new Exception("File already exists!");
                 }
             }
-            String fileText = BuildText();
+            String fileText = buildText();
             FileWriter writer = new FileWriter(showFile);
             writer.write(fileText);
             writer.close();
@@ -65,7 +65,7 @@ public class FillEpisodes
     .
     .
     */
-    private String BuildText()
+    private String buildText()
     {
         StringBuffer list = new StringBuffer();
         //boolean first = true;

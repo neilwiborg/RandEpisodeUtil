@@ -29,7 +29,7 @@ public class RandEpisodeUtil
                 episodes[j] = keyboard.nextInt();
             }
             FillEpisodes myEpisodes = new FillEpisodes(show, episodes);
-            myEpisodes.WriteFile();
+            myEpisodes.writeFile();
         }
         else
         {
@@ -40,7 +40,7 @@ public class RandEpisodeUtil
                 {
                     String showName = args[i+1];
                     Randomizer showRandom = new Randomizer(showName);
-                    String randEpisode = showRandom.ChooseRandom();
+                    String randEpisode = showRandom.chooseRandom();
                     System.out.println("The episode you should watch is: " + randEpisode);
                     break;
 //                    for (int j = 0; j < 50; j++)
