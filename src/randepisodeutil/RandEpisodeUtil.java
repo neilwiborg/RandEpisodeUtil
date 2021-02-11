@@ -47,7 +47,8 @@ public class RandEpisodeUtil
                 if (val.toLowerCase().equals("-c"))
                 {
                     String showName = args[i+1];
-                    Randomizer showRandom = new Randomizer(showName);
+                    Show myShow = new Show(showName);
+                    Randomizer showRandom = new Randomizer(myShow);
                     String randEpisode = showRandom.chooseRandom();
                     System.out.println("The episode you should watch is: " + randEpisode);
                     break;
