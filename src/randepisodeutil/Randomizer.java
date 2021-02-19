@@ -43,4 +43,13 @@ public class Randomizer
         //val between [1,episodeCount]
         return currentShow.findSeasonAndEpisode(val);
     }
+    
+    public String chooseRandomAlt()
+    {
+        currentShow.loadShowData();
+        Random rand = new Random();
+        int randSeason = rand.nextInt(currentShow.getNumberOfSeasons()) + 1;
+        int randEpisode = rand.nextInt(currentShow.getNumberOfEpisodesInSeason(randSeason)) + 1;
+        return currentShow.findSeasonAndEpisode(randSeason, randEpisode);
+    }
 }

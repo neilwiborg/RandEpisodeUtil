@@ -37,6 +37,11 @@ public class Show
         return findEpisode(showFile, episode, seasons);
     }
     
+    public String findSeasonAndEpisode(int season, int episode)
+    {
+        return findEpisode(showFile, new int[] {season, episode}, seasons);
+    }
+    
     /**
      * Loads the show file from the show title and makes the program directory
      * if it does not exist.
@@ -171,6 +176,38 @@ public class Show
         }
         return epTitle;
     }
+    
+    private String findEpisode(File showFile, int[] seasonAndEpisode, int[] myShow)
+    {
+        String seasonLine = "";
+        String epTitle = "";
+        try
+        {
+            if (showFile.isFile())
+            {
+                Scanner fileReader = new Scanner(showFile);
+                fileReader.nextLine();
+                int lines = 0;
+                do
+                {
+                    seasonLine = fileReader.nextLine();
+                    lines++;
+                } while (lines < seasonAndEpisode[0]);
+                fileReader = new Scanner(seasonLine);
+                fileReader.useDelimiter(",");
+                for (int i = 0; i < seasonAndEpisode[1]; i++)
+                {
+                    epTitle = fileReader.next();
+                }
+                epTitle = "S" + seasonAndEpisode[0] + "E" + epTitle;
+            }
+        } catch (Exception exp)
+        {
+            System.out.println("findEpisode Exception");
+            exp.printStackTrace();
+        }
+        return epTitle;
+    }
 
     public String getTitle()
     {
@@ -190,5 +227,10 @@ public class Show
     public File getShowFile()
     {
         return showFile;
+    }
+    
+    public int getNumberOfEpisodesInSeason(int season)
+    {
+        return seasons[season];
     }
 }

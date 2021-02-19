@@ -1,6 +1,11 @@
 package randepisodeutil;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.HashSet;
+import java.util.Properties;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Controller that manages the RandEpisodeUtil program. Instantiates other
@@ -13,6 +18,8 @@ import java.util.Scanner;
  */
 public class RandEpisodeUtil
 {
+    public static String appDir;
+    static Properties appProps;
 
     /**
      * The first method run by the program, controls which function of the
@@ -22,6 +29,16 @@ public class RandEpisodeUtil
      */
     public static void main(String[] args)
     {
+        appDir = System.getenv("LOCALAPPDATA") + "/RandEpisodeUtil/";
+        try
+        {
+            appProps = new Properties();
+            appProps.load(new FileInputStream(appDir + "app.properties"));
+            
+        } catch (Exception exp)
+        {
+            exp.printStackTrace();
+        }
         if (args.length == 0)
         {
             Scanner keyboard = new Scanner(System.in);
@@ -49,7 +66,17 @@ public class RandEpisodeUtil
                     String showName = args[i+1];
                     Show myShow = new Show(showName);
                     Randomizer showRandom = new Randomizer(myShow);
-                    String randEpisode = showRandom.chooseRandom();
+                    String randEpisode;
+                    switch (appProps.getProperty("randType"))
+                    {
+                        default:
+                        case "main":
+                            randEpisode = showRandom.chooseRandom();
+                            break;
+                        case "alt":
+                            randEpisode = showRandom.chooseRandomAlt();
+                            break;
+                    }
                     System.out.println("The episode you should watch is: " + randEpisode);
                     break;
 //                    for (int j = 0; j < 50; j++)
