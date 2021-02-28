@@ -1,11 +1,8 @@
 package randepisodeutil;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * Controller that manages the RandEpisodeUtil program. Instantiates other
@@ -19,7 +16,7 @@ import java.util.Set;
 public class RandEpisodeUtil
 {
     public static String appDir;
-    static Properties appProps;
+    public static Properties appProps;
 
     /**
      * The first method run by the program, controls which function of the
@@ -64,6 +61,10 @@ public class RandEpisodeUtil
                 if (val.toLowerCase().equals("-c"))
                 {
                     String showName = args[i+1];
+//                    if (Boolean.parseBoolean(appProps.getProperty("history")))
+//                    {
+//                        showName += " history";
+//                    }
                     Show myShow = new Show(showName);
                     Randomizer showRandom = new Randomizer(myShow);
                     String randEpisode;

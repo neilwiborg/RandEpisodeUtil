@@ -1,6 +1,8 @@
 package randepisodeutil;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -14,6 +16,7 @@ public class Show
     int numberOfSeasons;
     int numberOfEpisodes;
     int[] seasons;
+    boolean history;
 
     public Show()
     {
@@ -26,6 +29,7 @@ public class Show
     
     public void loadShowData()
     {
+        checkHistory();
         loadFile();
         loadShow(showFile);
         numberOfEpisodes = arraySum(seasons);
@@ -61,6 +65,18 @@ public class Show
             if (!prgrmDir.exists())
             {
                 prgrmDir.mkdir();
+            }
+            if (history)
+            {
+                String filepathHistory = System.getenv("LOCALAPPDATA") + 
+                    "/RandEpisodeUtil/" + title + " history.txt";
+                File showFileHistory = new File(filepathHistory);
+                if (!showFileHistory.exists())
+                {
+                    Files.copy(showFile.toPath(), showFileHistory.toPath());
+                    showFile = showFileHistory;
+                    title += " history";
+                }
             }
         } catch (Exception exp)
         {
@@ -233,4 +249,41 @@ public class Show
     {
         return seasons[season];
     }
+    
+    private void checkHistory()
+    {
+        history = Boolean.parseBoolean(RandEpisodeUtil.appProps.getProperty("history"));
+//        Scanner scanTitle = new Scanner(title);
+//        scanTitle.useDelimiter(" ");
+//        ArrayList<String> words = new ArrayList<>();
+//        while(scanTitle.hasNext())
+//        {
+//            words.add(scanTitle.next());
+//        }
+//        if (words.get(words.size() - 1).equals("history"))
+//        {
+//            history = true;
+//        }
+//        else
+//        {
+//            history = false;
+//        }
+    }
+    
+//    private File getOriginalFile()
+//    {
+//        if (history)
+//        {
+//            String originalTitle = Utilities.removeWord(title, "history");
+//            try
+//            {
+//                return new File(System.getenv("LOCALAPPDATA") + 
+//                    "/RandEpisodeUtil/" + originalTitle + ".txt");
+//            } catch (Exception exp)
+//            {
+//                
+//            }
+//        }
+//        return null;
+//    }
 }
