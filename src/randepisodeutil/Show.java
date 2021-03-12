@@ -347,6 +347,21 @@ public class Show
             myShow.get(seasonNumber).remove(episodeNumber);
         }
         
+        private void splitValue(int seasonNumber, String episodeName, int parts)
+        {
+            int episodeNumber = myShow.get(seasonNumber).indexOf(episodeName);
+            removeValue(seasonNumber, episodeName);
+            for (int i = 0; i < parts; i++)
+            {
+                if (i > 25)
+                {
+                    System.out.println("Error splitting episode!");
+                }
+                char letter = (char)(i + 65); // ASCII 65 = 'A'
+                addValue(seasonNumber, episodeNumber + i, episodeName + letter);
+            }
+        }
+        
         //public
         
         private void saveShow()
@@ -386,12 +401,12 @@ public class Show
                 }
                 if (showFile.isFile())
                 {
-                    Scanner userConf = new Scanner(System.in);
-                    System.out.print("This show already exists! Overwrite old file? [Y/n] ");
-                    if (userConf.next().toLowerCase().charAt(0) == 'n')
-                    {
-                        throw new Exception("File already exists!");
-                    }
+//                    Scanner userConf = new Scanner(System.in);
+//                    System.out.print("This show already exists! Overwrite old file? [Y/n] ");
+//                    if (userConf.next().toLowerCase().charAt(0) == 'n')
+//                    {
+//                        throw new Exception("File already exists!");
+//                    }
                 }
                 FileWriter writer = new FileWriter(showFile);
                 writer.write(fileContents);
