@@ -18,6 +18,7 @@ public class Show
     int numberOfEpisodes;
     int[] seasons;
     boolean history;
+    private ArrayList<ArrayList<String>> myShow = new ArrayList<>();
 
     public Show()
     {
@@ -32,11 +33,10 @@ public class Show
     {
         checkHistory();
         loadFile();
-        loadShow(showFile);
+        loadShow(showFile); //replace?
         numberOfEpisodes = arraySum(seasons);
-        Seasons showSeasons = new Seasons(showFile);
-        showSeasons.saveShow();
-        
+        loadArrayList(showFile);
+        saveShow();
     }
     
     public String findSeasonAndEpisode(int episode)
@@ -49,7 +49,7 @@ public class Show
         return findEpisode(showFile, new int[] {season, episode}, seasons);
     }
     
-    /**
+        /**
      * Loads the show file from the show title and makes the program directory
      * if it does not exist.
      * 
@@ -112,6 +112,68 @@ public class Show
         } catch (Exception exp)
         {
             System.out.println("countLines Exception");
+        }
+    }
+    
+    private void loadArrayList(File showFile)
+    {
+        myShow.ensureCapacity(numberOfSeasons + 1);
+        myShow.add(null);
+        for (int i = 1; i < numberOfSeasons + 1; i++)
+        {
+            myShow.add(i, new ArrayList<>());
+            myShow.get(i).add(null);
+            myShow.get(i).ensureCapacity(seasons[i] + 1);
+        }
+        try
+        {
+            Scanner FileReader = new Scanner(showFile);
+            FileReader.nextLine();
+            for (int i = 1; FileReader.hasNextLine(); i++)
+            {
+                Scanner lineReader = new Scanner(FileReader.nextLine());
+                lineReader.useDelimiter(",");
+                for (int j = 1; lineReader.hasNext(); j++)
+                {
+                    addValue(i, j, lineReader.next());
+                }
+            }
+        } catch (Exception exp)
+        {
+                
+        }
+    }
+    
+    private void addValue(int seasonNumber, int episodeNumber, String episodeName)
+    {
+        try
+        {
+            myShow.get(seasonNumber).add(episodeNumber, episodeName);
+        } catch (IndexOutOfBoundsException exp)
+        {
+            myShow.add(seasonNumber, new ArrayList<>());
+            myShow.get(seasonNumber).add(episodeNumber, episodeName);
+        }
+    }
+        
+    private void removeValue(int seasonNumber, String episodeName)
+    {
+        int episodeNumber = myShow.get(seasonNumber).indexOf(episodeName);
+        myShow.get(seasonNumber).remove(episodeNumber);
+    }
+        
+    private void splitValue(int seasonNumber, String episodeName, int parts)
+    {
+        int episodeNumber = myShow.get(seasonNumber).indexOf(episodeName);
+        removeValue(seasonNumber, episodeName);
+        for (int i = 0; i < parts; i++)
+        {
+            if (i > 25)
+            {
+                System.out.println("Error splitting episode!");
+            }
+            char letter = (char)(i + 65); // ASCII 65 = 'A'
+            addValue(seasonNumber, episodeNumber + i, episodeName + letter);
         }
     }
     
@@ -228,6 +290,28 @@ public class Show
         }
         return epTitle;
     }
+    
+    private int[] findNonemptySeasons()
+    {
+        int total = 0;
+        for (int i = 1; i < myShow.size(); i++)
+        {
+            if (myShow.get(i).size() > 0)
+            {
+                total++;
+            }
+        }
+        int[] seasons = new int[total];
+        int counter = 0;
+        for (int i = 0; i < seasons.length; i++)
+        {
+            if (myShow.get(i + 1).size() > 0)
+            {
+                seasons[counter++] = i + 1;
+            }
+        }
+        return seasons;
+    }
 
     public String getTitle()
     {
@@ -257,165 +341,59 @@ public class Show
     private void checkHistory()
     {
         history = Boolean.parseBoolean(RandEpisodeUtil.appProps.getProperty("history"));
-//        Scanner scanTitle = new Scanner(title);
-//        scanTitle.useDelimiter(" ");
-//        ArrayList<String> words = new ArrayList<>();
-//        while(scanTitle.hasNext())
-//        {
-//            words.add(scanTitle.next());
-//        }
-//        if (words.get(words.size() - 1).equals("history"))
-//        {
-//            history = true;
-//        }
-//        else
-//        {
-//            history = false;
-//        }
     }
     
-//    private File getOriginalFile()
-//    {
-//        if (history)
-//        {
-//            String originalTitle = Utilities.removeWord(title, "history");
-//            try
-//            {
-//                return new File(System.getenv("LOCALAPPDATA") + 
-//                    "/RandEpisodeUtil/" + originalTitle + ".txt");
-//            } catch (Exception exp)
-//            {
-//                
-//            }
-//        }
-//        return null;
-//    }
-    
-    private class Seasons
+    private void saveShow()
     {
-        private ArrayList<ArrayList<String>> myShow = new ArrayList<>();
+        StringBuilder list = new StringBuilder();
+        list.append("[" + RandEpisodeUtil.appProps.getProperty("version") + "]");
+        list.append(" " + (myShow.size() - 1));
+        for (int i = 1; i < myShow.size(); i++)
+        {
+            list.append(" " + (myShow.get(i).size() - 1));
+        }
+        for (int i = 1; i < myShow.size(); i++)
+        {
+            list.append("\n");
+            for (int j = 1; j < myShow.get(i).size(); j++)
+            {
+                list.append(myShow.get(i).get(j) + ",");
+            }
+            list.deleteCharAt(list.length() - 1);
+        }
+        writeShow(list.toString());
+    }
 
-        public Seasons()
+    private void writeShow(String fileContents)
+    {
+        try
         {
-            
-        }
-        
-        public Seasons(File showFile)
-        {
-            myShow.ensureCapacity(numberOfSeasons + 1);
-            myShow.add(null);
-            for (int i = 1; i < numberOfSeasons + 1; i++)
+            //String filepath = ".\\" + title + ".txt";
+            String filepath = System.getenv("LOCALAPPDATA") + 
+                    "/RandEpisodeUtil/" + title + ".txt";
+            File showFile = new File(filepath);
+            File prgrmDir = new File(System.getenv("LOCALAPPDATA") +
+                    "/RandEpisodeUtil/");
+            if (!prgrmDir.exists())
             {
-                myShow.add(i, new ArrayList<>());
-                myShow.get(i).add(null);
-                myShow.get(i).ensureCapacity(seasons[i] + 1);
+                prgrmDir.mkdir();
             }
-            try
+            if (showFile.isFile())
             {
-                Scanner FileReader = new Scanner(showFile);
-                FileReader.nextLine();
-                for (int i = 1; FileReader.hasNextLine(); i++)
-                {
-                    Scanner lineReader = new Scanner(FileReader.nextLine());
-                    lineReader.useDelimiter(",");
-                    for (int j = 1; lineReader.hasNext(); j++)
-                    {
-                        addValue(i, j, lineReader.next());
-                    }
-                }
-            } catch (Exception exp)
-            {
-                
-            }
-        }
-        
-        private void addValue(int seasonNumber, int episodeNumber, String episodeName)
-        {
-            try
-            {
-                myShow.get(seasonNumber).add(episodeNumber, episodeName);
-            } catch (IndexOutOfBoundsException exp)
-            {
-                myShow.add(seasonNumber, new ArrayList<>());
-                myShow.get(seasonNumber).add(episodeNumber, episodeName);
-            }
-        }
-        
-        private void removeValue(int seasonNumber, String episodeName)
-        {
-            int episodeNumber = myShow.get(seasonNumber).indexOf(episodeName);
-            myShow.get(seasonNumber).remove(episodeNumber);
-        }
-        
-        private void splitValue(int seasonNumber, String episodeName, int parts)
-        {
-            int episodeNumber = myShow.get(seasonNumber).indexOf(episodeName);
-            removeValue(seasonNumber, episodeName);
-            for (int i = 0; i < parts; i++)
-            {
-                if (i > 25)
-                {
-                    System.out.println("Error splitting episode!");
-                }
-                char letter = (char)(i + 65); // ASCII 65 = 'A'
-                addValue(seasonNumber, episodeNumber + i, episodeName + letter);
-            }
-        }
-        
-        //public
-        
-        private void saveShow()
-        {
-            StringBuilder list = new StringBuilder();
-            list.append("[" + RandEpisodeUtil.appProps.getProperty("version") + "]");
-            list.append(" " + (myShow.size() - 1));
-            for (int i = 1; i < myShow.size(); i++)
-            {
-                list.append(" " + (myShow.get(i).size() - 1));
-            }
-            for (int i = 1; i < myShow.size(); i++)
-            {
-                list.append("\n");
-                for (int j = 1; j < myShow.get(i).size(); j++)
-                {
-                    list.append(myShow.get(i).get(j) + ",");
-                }
-                list.deleteCharAt(list.length() - 1);
-            }
-            writeShow(list.toString());
-        }
-        
-        private void writeShow(String fileContents)
-        {
-            try
-            {
-                //String filepath = ".\\" + title + ".txt";
-                String filepath = System.getenv("LOCALAPPDATA") + 
-                        "/RandEpisodeUtil/" + title + ".txt";
-                File showFile = new File(filepath);
-                File prgrmDir = new File(System.getenv("LOCALAPPDATA") +
-                        "/RandEpisodeUtil/");
-                if (!prgrmDir.exists())
-                {
-                    prgrmDir.mkdir();
-                }
-                if (showFile.isFile())
-                {
 //                    Scanner userConf = new Scanner(System.in);
 //                    System.out.print("This show already exists! Overwrite old file? [Y/n] ");
 //                    if (userConf.next().toLowerCase().charAt(0) == 'n')
 //                    {
 //                        throw new Exception("File already exists!");
 //                    }
-                }
-                FileWriter writer = new FileWriter(showFile);
-                writer.write(fileContents);
-                writer.close();
-                System.out.println("Show saved!");
-            } catch (Exception exp)
-            {
-                System.out.println(exp.getMessage());
             }
+            FileWriter writer = new FileWriter(showFile);
+            writer.write(fileContents);
+            writer.close();
+            System.out.println("Show saved!");
+        } catch (Exception exp)
+        {
+            System.out.println(exp.getMessage());
         }
     }
 }

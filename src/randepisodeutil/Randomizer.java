@@ -48,6 +48,10 @@ public class Randomizer
     {
         currentShow.loadShowData();
         Random rand = new Random();
+        if (Boolean.parseBoolean(RandEpisodeUtil.appProps.getProperty("history")))
+        {
+            //currentShow.
+        }
         int randSeason = rand.nextInt(currentShow.getNumberOfSeasons()) + 1;
         int randEpisode = rand.nextInt(currentShow.getNumberOfEpisodesInSeason(randSeason)) + 1;
         return currentShow.findSeasonAndEpisode(randSeason, randEpisode);
