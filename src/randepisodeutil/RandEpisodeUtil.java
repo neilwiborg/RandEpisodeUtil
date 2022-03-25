@@ -26,7 +26,8 @@ public class RandEpisodeUtil
      */
     public static void main(String[] args)
     {
-        appDir = System.getenv("LOCALAPPDATA") + "/RandEpisodeUtil/";
+        appDir = System.getenv("XDG_DATA_HOME") + "/RandEpisodeUtil/";
+        //appDir = System.getenv("LOCALAPPDATA") + "/RandEpisodeUtil/";
         try
         {
             appProps = new Properties();
@@ -101,5 +102,11 @@ public class RandEpisodeUtil
                 }
             }
         }
+    }
+    
+    void detectOS() {
+        //if (IS_OS_WINDOWS)
+             // appDir = System.getenv("LOCALAPPDATA") + "/RandEpisodeUtil/";
+        
     }
 }
