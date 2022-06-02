@@ -1,4 +1,4 @@
-package randepisodeutil;
+package randepisodeutil.old_ver;
 
 import java.io.FileInputStream;
 import java.util.Properties;
